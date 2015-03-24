@@ -1,0 +1,49 @@
+# Alejandro Solanas - 647647
+
+Parte 1
+
+	Añadir local0.info @iphost:514 (514 es el puerto especificado en rsyslog.conf, un @ para UDP, dos @@ para tcp) al final del archivo 
+	/etc/rsyslog.conf para especificar la ip a la que mandara la informacion la maquina virtual. (Usare UDP, porque en TCP habria que modificar el puerto, superior a 1024)
+
+	Eliminar el # de $modload imudp $UDPServerRUn 514 (Si usamos tcp tambien habrá que ponerlo como comando y no comentario)
+
+	Abrimos /etc/rsyslog.conf para establecer al final del fichero donde se escribirá lo que llegue, así que bajo hasta el final y añado esta linea:
+	local0.info /var/log/monitorization.log
+
+	Añadimos a /etc/crontab 02 * * * root /home/user/Documentos/ASIS/practica_6.sh >/dev/null
+	Esto 
+
+
+Parte 2
+
+	Instalamos logcheck: sudo apt-get install logcheck Configurarlo:
+	Editar /etc/logcheck/logcheck.conf e indicar en la línea SENDMAILTO="correo@electron.ico"
+	la dirección donde queremos recibir las notificaciones Editar /etc/logcheck/logcheck.logfiles
+	y añadir las líneas:
+	/var/log/monitorization
+	
+	En el fichero /var/log/monitorization estara la siguiente información obtenida mediante el
+	script de la parte 1, en este caso nos interesan estas partes
+	
+	(free -h)
+			   total       usado       libre     compart.    búffers     almac. 
+	Mem:          3,7G       2,2G       1,5G         0B        81M       580M
+	-/+ buffers/cache:       1,5G       2,2G
+	Intercambio:       3,9G         0B       3,9G
+	
+	(uptime)
+	
+	20:50:45 up  2:49,  2 users,  load average: 0,32, 0,53, 0,41
+
+
+	Añadiremos al fichero /etc/logcheck/ignore.d.server/local las expresiones para filtrar la información.
+	
+	Expresion que buscara si la memoria usada es superior o igual a los 2GB
+	
+	Mem: [0-9]+,[0-9]+G       [0-1],[0-9]+G -> Descargo todos los valores menores a 2GB en usado
+		
+	Expresión que busca cargas del sistema superiores a 0.2 en uptime
+		
+	load average: 0,[0-1][0-9], 0,[0-1][0-9], 0,[0-1][0-9] -> ignorara todo dato cuya carga
+	del sistema sea menor a 0.10 (versión con el formato de numero 0,0 y no 0.0)
+	

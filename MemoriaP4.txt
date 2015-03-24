@@ -1,0 +1,37 @@
+Memoria Práctica 4
+
+Parte 2
+
+1.  	Instalar sudo desde root con apt-get install sudo en caso de no estar ya instalado
+	Buscar la linea "# Allow members of group sudo to execute any command"
+	Sustituir el comando posterior por %sudo ALL=(ALL) ALL 	
+2. 	Abrir /etc/network/interfaces
+	Buscar la linea # The primary network interface
+	Sustuir el parrafo por 
+		auto eth0
+		iface eth0 inet dhcp
+		euto eth1
+		iface eth1 inet static
+		address 192.168.56.2
+		netmask 255.255.255.0
+		gateway 192.168.1.1
+		
+	Con esto conseguimos que ambos adaptadores se automonten al inicio
+3.   Usar ping IP , en este caso ping 10.0.2.15 por ejemplo.
+4. 	sudo apt-get install openssh-server
+5.   Abrir /etc/ssh/sshd_config
+	Buscar la linea PermitRootLogin yes y sustituir yes por no.
+6.	Comprobar el funcionamiento de ssh con shh user@IP
+
+Parte 3
+	sudo ssh-keygen [enter] 
+	Esto generará una clave privada y otra pública, .shh/id_rsa.pub
+	Enviamos el fichero a la maquina destino scp id_rsa.pub user@IP:/tmp
+	Entramos en la maquina destino con ssh user@IP
+	cd .ssh/	 
+	Después añadiremos a clave cat /tmp/id_rsa.pub >> authorized-keys
+	Y borramos el temporal rm /tmp/id.rsa.pub	 
+
+Parte 4 
+	Modificamos el script practica3 para ejecutar las ordenes con el comando ssh $userip@$IP....		
+		

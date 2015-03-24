@@ -1,0 +1,74 @@
+Parte1
+	
+	sudo fdisk /dev/sda		comenzar particion sobre disco sda
+	Si pulsamos la m una vez dentro podremos visualizar las distintas opciones con su respectiva letra de ejecución:
+	Orden  Acción
+	a   Conmuta el indicador de iniciable
+	b   Modifica la etiqueta de disco bsd
+	c   Conmuta el indicador de compatibilidad con DOS
+	d   Suprime una partición
+	l   Lista los tipos de particiones conocidos
+	m   Imprime este menú
+	n   Añade una nueva partición
+	o   Crea una nueva tabla de particiones DOS vacía
+	p   Imprime la tabla de particiones
+	q   Sale sin guardar los cambios
+	s   Crea una nueva etiqueta de disco Sun
+	t   Cambia el identificador de sistema de una partición
+	u   Cambia las unidades de visualización/entrada
+	v   Verifica la tabla de particiones
+	w   Escribe la tabla en el disco y sale
+	x   Funciones adicionales (sólo para usuarios avanzados)
+
+	Vamos a crear una nueva partición, así que pulsamos “n”:
+
+	Acción de la orden
+	e   Partición extendida
+	p   Partición primaria (1-4)
+
+	elegimos particion primaria (1-4), dara un valor libre por defecto 
+	Dejamos el resto por defecto, y guardamos los cambios con w
+
+	Finalmente debemos ejecutar el comando partprobe para indicar al kernel que vuelva a leer la tabla de particiones:
+	sudo partprobe
+
+	sudo fdisk -l
+
+	Formateamos la partición como ext4/ext3:
+
+	sudo mkfs.ext4  /dev/sda3   (para ext3 mkfs.ext3)
+
+	sudo mount //dev/sda3
+
+Parte 2
+	
+	Las diferencias entre ambas máquinas virtuales consistirán en que la primera maquina virtual ( sin disco duro adicional ) mostrará
+	uno solo disco /dev/sda en este caso, y la seguna dos discos /dev/sda y /dev/sdb con sus correspondienrtes particiones si las hay  
+		
+
+Parte 3
+
+	Supongamos que tenemos un disco duro nuevo, /dev/sda, vamos a prepararlo para utilizar LVM, ejecutamos fdisk sobre el disco para ello:
+
+	fdisk /dev/sdb
+	Una vez dentro, presionamos “n” para crear una nueva particion:
+
+	   n   Añade una nueva partición
+	Presionamos “p” para crear una nueva partición primaria
+
+	   p   Partición primaria (1-4)
+	Presionamos 1 para crearla como la primera partición del disco, posteriormente presionamos ENTER hasta aceptar todos los valores por defecto de primer y último cilindro.
+
+	Una vez finalizado y de nuevo en el menú de fdisk, presionamos “t” para cambiar el identificador de sistema de una partición:
+
+	   t   Cambia el identificador de sistema de una partición
+	La cambiaremos al tipo “LVM partition type (0×8e)”, para ello introducimos 8e. Podemos en este punto presionar “p” para imprimir la tabla de particiones y ver que todo es correcto:
+
+	   p   Imprime la tabla de particiones
+	Finalmente guardamos los cambios con “w”
+
+	Al hacer un fdisk -l del nuevo disco, veremos que efectivamente ya utiliza LVM.
+	
+	Si queremos crear el volumen logico con la particion LVM que acabamos de crear podemos usar
+	sudo vgcreate volgroup_01 /dev/sdc1 ( en mi caso )
+
