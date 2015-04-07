@@ -18,6 +18,41 @@
 # nl:       Añade números de línea
 # expand:   Convierte TABs en espacios
 # od:       Muestra un fichero en diferentes formatos
+# sed:      Transformaciones basicas de un flujo de entrada
+#           sed comando [lista_ficheros]
+#           sed [-e comando] [-f fichero_comandos] [lista_ficheros]
+#           comandos: s sustitucion, d borrado,
+#                     i\ a\ añade antes/despues de la linea afectada
+#                      c\ reemplaza la linea afectada
+#           flags: g cambios globales, p imprime lineas afectadas
+#                   NUMERO: reemplaza la aparicion numero NUMERO
+#                   w fichero: escribe las lineas con sustituciones al fichero
+# egrep:    Expresiones reguarles (extendidas)
+#           grep [opciones] ER [ficheros]
+#           -c , -l, -v, -E, -f [fichero],
+#           nº de lineas caputradas, solo ficheros con líneas capturadas,
+#           todo menos lo capturado segun la ER, egrep, leer ERs de fichero
+
+
+
+# awk:
+
+#ER
+# .         cualquier caracater
+# []        cualquier ade los caracteres entre corchetes
+# [^]       cualquier caracter que no esté entre corchetes
+# ^         principio de linea
+# $         final de linea
+# *         0 o mas ocurrencias
+# +         1 o mas ocurrencias
+# ?         0 o 1 ocurrencia
+# \w        caracteres alfanumericos
+# |         a | b       # a o b
+# \( \)     agrupa ER
+# \         escapa un metacaracter
+# \{n\}     concuerda con exactamente n ocurrencias de la ER previa
+# \{n,\}    concuerda con al menos n ocurrencias de la ER previa
+# \{n, m\}  concuerda con entre n y m ocurrencias de la ER previa
 
 #_____________________________________________________________________#
 #_____________________________________________________________________#
@@ -57,6 +92,33 @@
 # 1 Pedro Andion
 # 3 Celia Fernandez
 # 1 Enrique Pena
+
+# sed -e ´s/pepe/Pepe/g´ -e ´s/paco/Paco/g´ amigos
+# cambia en amigos, todas las paraciones de pepe y paco y Pepe y Paco
+
+# sed ´/Potamo/s/pepe/Pepe/g´ amigos
+# cambia pepe por Pepe solo en las lineas que salga Potamo
+
+# sed ´3,$s/stop/STOP/g´
+# reemplaza de la linea 3 al final
+
+# sed ´!3s/stop/STOP/g´
+# reemplaza en todas las lienas menos la 3
+
+# sed -r ´s/\<./\u&/g´
+# cambia de minus a mayus la primera letra da cada palabra
+
+# sed -r "s/^ +// ; s/ +$// ; s/ +/ /g" fich
+# Poner los 4 primeros caracteres de cada línea al final de la misma
+
+# sed -r ´s/^(.{4,4})(.*)/\2\1/´ fich
+# poner los 3 primeros caracteres de cada linea al final de la misma
+
+# 0\(abc\)*0
+# cadenas que tengan un 0 seguido de 0 o mas
+# ocurrencias de acb y seguido de otro 0
+
+
 
 #_____________________________________________________________________#
 #_____________________________________________________________________#
