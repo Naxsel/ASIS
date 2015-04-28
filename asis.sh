@@ -23,10 +23,10 @@
 #           sed [-e comando] [-f fichero_comandos] [lista_ficheros]
 #           comandos: s sustitucion, d borrado,
 #                     i\ a\ añade antes/despues de la linea afectada
-#                      c\ reemplaza la linea afectada
+#                     c\ reemplaza la linea afectada
 #           flags: g cambios globales, p imprime lineas afectadas
-#                   NUMERO: reemplaza la aparicion numero NUMERO
-#                   w fichero: escribe las lineas con sustituciones al fichero
+#                  NUMERO: reemplaza la aparicion numero NUMERO
+#                  w fichero: escribe las lineas con sustituciones al fichero
 # egrep:    Expresiones reguarles (extendidas)
 #           grep [opciones] ER [ficheros]
 #           -c , -l, -v, -E, -f [fichero],
@@ -66,13 +66,13 @@
 # Jorge Pena
 # Maria Perez
 
-# cut-c 1-7 nombres-ord.txt
+# cut -c 1-7 nombres-ord.txt
 # Luis An
 # Adriana
 # Jorge P
 # Maria P
 
-# cut-d ´ ´ -f 1 nombres-ord.txt
+# cut -d ´ ´ -f 1 nombres-ord.txt
 # Luis
 # Adriana
 # Jorge
@@ -113,6 +113,12 @@
 
 # sed -r ´s/^(.{4,4})(.*)/\2\1/´ fich
 # poner los 3 primeros caracteres de cada linea al final de la misma
+
+# echo "abc1234def" | sed -r "s/[0-9]+/NUMERO/"
+# abcNUMEROdef
+
+# echo "000x111x222x333" | sed ´s/x.*x/<&>/´
+# 000<x111x222x>333
 
 # 0\(abc\)*0
 # cadenas que tengan un 0 seguido de 0 o mas
@@ -206,6 +212,86 @@
 
 # necesitamos la columna 1 y 3
 # cut -d: -f1,3 /etc/passwd | tr : ' ' | sort -k2 -n
+
+#_____________________________________________________________________#
+
+# Encontrar usuarios con nombres de 4 o mas caracteres
+# cat /etc/passwd | egrep '^.\w{4,}:' | cut -d ':' -f 1
+# cat /etc/passwd | cut -d ':' -f 1 | egrep '.{4,}'
+# cat /etc/passwd | cut -d ':' -f 1 | egrep '\w{4,}'    #\w es alfanumerico
+
+#_____________________________________________________________________#
+
+# Encontrar todos los usuarios del sistema cuyo ID sea > 99
+# egrep '^\w*:\w*:[0-9]{3,}' /etc/passwd  #No vale con usuarios con caracteres no alfanumericos
+# egrep '^[^:]*:[^:]*:[0-9]{3,}' /etc/passwd  #Solucion mas correcta
+
+#_____________________________________________________________________#
+
+# Cambiar de un fichero, las apariciones:
+# unix -> unixTM
+# unix -> UnixTM
+
+# sed -r -e '/patron_de_busqueda/comando/patron de sust/sutituto/label'
+# sed -r -e 's/[Uu]nix/&TM/g' text   #Sin patron de busqueda porque se aplica a todo
+# sed -r -e 's/([Uu]nix)/\1TM/g' text
+
+#_____________________________________________________________________#
+
+# Borrar lineas en blanco de un fichero
+
+# sed -r '/^[\t ]*$/d' text     #d borra lineas
+
+#_____________________________________________________________________#
+
+# Formatear el texto de espacios
+
+# sed -r -e 'comando' -e 'comando'
+# sed -r -e 's/ +/ /g' -e '/^ +//g' text     #el segundo + es redundante
+
+#_____________________________________________________________________#
+
+# Formatear la salida del date: mar abr 21 11:49:04 CEST 2015
+
+# date | cut -d ' ' -f2,3,6 | sed -r -e 's/ [0-9]+$/,&/'
+# date | cut -d ' ' -f2,3,6 | sed -r -e 's/[0-9]{1,2}/&,/'
+# date | sed -r 's/^[^ ]+ (\w+) /\1/'
+
+#_____________________________________________________________________#
+
+# Encontrar telefonos en un fichero con el formato:
+# Empieza por 6,7,8 o 9
+# 987-654-321
+# 987 654 321
+
+# egrep '[6-9][0-9]{2}([ -][0-9]{3}){2}' #mal porque el espacio y el guion deben ser el mismo la 2º vez
+# egrep '[6-9][0-9]{2}([ -])[0-9]{3}\1[0-9]{3}' #mal porque el 0987 657 456 le vale
+# Los parentesis lo que hacen es capturarlo para usarlo con el \1
+# egrep '(^|[ \t\n,:])[6-9][0-9]{2}([ -])[0-9]{3}\2[0-9]{3}([ \t\n,:]|$)'
+
+#_____________________________________________________________________#
+
+# Mover todos los ficheros que tengan una extension a ./tmp/
+
+# a1 (no se mueve)
+# a2.xyz (se mueve)
+# a4.xy.xy (se mueve)
+
+# mv *.* ./tmp
+# ls *.* | xargs -I@ mv @ ./tmp
+
+#_____________________________________________________________________#
+
+# Renombrar los ficheros en el directorio actual, quitandoles la extension y moverlos.
+
+# a1.xyz -> a1
+# a2.xyz.abc -> a2.xyz
+
+# ls *.* | sed -r 's/(.*)\.[^.]*/& \1/' | xargs -I@ echo @
+# ls *.* | sed -r 's/(.*)\.[^.]*/& \1/' | xargs -n2 mv
+
+#_____________________________________________________________________#
+
 
 #_____________________________________________________________________#
 #_____________________________________________________________________#
@@ -317,6 +403,40 @@
 # 	fi
 # done
 # echo "Se han movido $movidos archivos ejecutables"
+
+#_____________________________________________________________________#
+
+# practica3.sh
+
+# El siguiente script se ejecuta de la siguiente forma ./practica3.sh [fichero] [instruccion]
+# Las instruciones posibles son Anadir / Eliminar
+
+# if [ ! -f $1 ]; then echo "No existe el fichero introducido"
+# else
+# 	if [ "$2" == "Anadir" ]
+# 		then
+# 		while read user pass
+# 		do
+# 			useradd $user -p $pass -m -U -K UID_MIN=1000
+#       #Por defecto ya inicializa home con /etc/skel, devuelve 0 si añade correctamente
+# 			if [ $? -eq 0 ]; then echo "Usuario $user añadido"
+# 			fi
+# 			echo "$user"vim:"$pass" | chpasswd
+# 		done < $1
+#
+# 	elif [ "$2" == "Eliminar" ]
+# 		then
+# 		while read user pass
+# 		do
+# 			tar -cvf "$user".tar /home/"$user"
+# 			userdel -r $user				 #Devuelve 0 si se ha eliminado correctamente
+# 			if [ $? -eq 0 ]; then echo "Usuario $user eliminado"
+# 			fi
+# 		done < $1
+# 		else echo "Orden no reconocida"
+# 		fi
+# 	fi
+# fi
 
 #_____________________________________________________________________#
 #_____________________________________________________________________#
