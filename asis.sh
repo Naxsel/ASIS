@@ -292,6 +292,38 @@
 
 #_____________________________________________________________________#
 
+# Dado un fichero con nombres y apellidos, generar una lista de direcciones
+# de correo electronico de la forma: 1ºletraname1ºapellido@unizar.es (minus)
+
+# tr [A-Z] [a-z] nombres | sed -r 's/(^.)[^ ]* (\w+)/\1\2@unizar.es/'
+# mal porque mostraria el 2º apellido, hay que consumir toda la linea
+
+# cat nombres | tr [A-Z] [a-z] | sed -r 's/(^.)[^ ]* (\w+).*$/\1\2@unizar.es/'
+# cat nombres | tr [A-Z] [a-z] | sed -r 's/(\w)\w* (\w+).*$/\1\2@unizar.es/'
+
+# sin sed
+
+# #!/bin/bash
+# if [$# -ne 1]
+# then
+#   echo Uso: $0 fichero
+#    exit 1
+# fi
+#
+# while read nombre apellido1 apellido2
+# do
+#   inicial=$(echo $nombre | cut -c1)
+#   echo ${inicial}${apellido1}@unizar.es | tr [A-Z] [a-z]
+# done < $1
+
+#_____________________________________________________________________#
+
+#Simular el envio de un mail enviando apto no apto de la forma
+#body: nombre apellido/s nota. Presentados:n, Aptos:m
+
+wc -l
+
+grep con contado en no apto y resta
 
 #_____________________________________________________________________#
 #_____________________________________________________________________#
@@ -433,6 +465,41 @@
 # 			if [ $? -eq 0 ]; then echo "Usuario $user eliminado"
 # 			fi
 # 		done < $1
+# 		else echo "Orden no reconocida"
+# 		fi
+# 	fi
+# fi
+
+#_____________________________________________________________________#
+
+# practica4.sh
+
+# El siguiente script se ejecuta de la siguiente forma ./practica4.sh [ficheroip] [instruccion] [fichero_nombres]
+# Las instruciones posibles son Anadir / Eliminar
+
+# if [ ! -f $1 -a ! -f $3 ]; then echo "No existen los ficheros introducidos"
+# else
+# 	if [ "$2" == "Anadir" ]
+# 		then
+# 		while read userip IP <&5
+# 		do
+# 			while read user pass
+# 			do
+# 				ssh $userip@$ip "sudo useradd $user -p $pass -m -U -K UID_MIN=1000" < /dev/null
+# 				ssh $userip@$ip "sudo echo "$user"vim:"$pass" | chpasswd" < /dev/null
+# 			done < $3
+# 		done 5<$1
+#
+# 	elif [ "$2" == "Eliminar" ]
+# 		then
+# 		while read userip IP <&5
+# 		do
+# 			while read user pass
+# 			do
+# 				ssh $userip@$ip "sudo tar -cvf "$user".tar /home/"$user"" < /dev/null
+# 				ssh $userip@$ip "sudo userdel -r $user" < /dev/null
+# 			done < $3
+# 		done 5<$1
 # 		else echo "Orden no reconocida"
 # 		fi
 # 	fi
